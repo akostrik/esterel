@@ -1,0 +1,30 @@
+module record :
+input  V        : integer; 
+output RECORD_V : integer; 
+input  N        : integer; 
+output RECORD_N : integer;
+input  JOUR;
+input  NUIT;
+
+var cptJours:=0 : integer in
+trap TRAP_FIN_RECORD in
+every immediate NUIT do
+  trap TRAP_JOUR in
+  every [V or JOUR] do
+    present JOUR then
+      cptJours := cptJours+1;
+      if cptJours>30 then
+        exit TRAP_FIN_RECORD
+      end if;
+      exit TRAP_JOUR
+    end present;
+    present V then
+      emit RECORD_V(?V);
+      emit RECORD_N(?N)
+    end present
+  end every
+  end trap 
+end every
+end trap
+end var
+end module

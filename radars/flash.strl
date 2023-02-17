@@ -1,0 +1,14 @@
+module flash :
+output D  : integer;  
+input  N  : integer; 
+output PV : integer;
+output F;
+
+% pas "loop each D" !
+% D => la nuit   
+every immediate D do   % bien que D output     
+  emit F;
+  await immediate N;  
+  emit PV(?N)
+end every 
+end module

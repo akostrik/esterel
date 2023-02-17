@@ -1,2 +1,2 @@
 # esterel
-La Sorbonne project
+La Sorbonne Unversity exercices, Masteur 

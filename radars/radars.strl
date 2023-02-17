@@ -1,0 +1,32 @@
+% esterel -simul radars.strl radar1.strl radar2.strl detect.strl record.strl flash.strl police.strl -B radars
+
+% gcc -m32 -o radars radars.c -L/Vrac/PC2R/esterelv5_92/lib -l csimul
+
+% NUIT;;V1(500) N1(1) V2(500) N2(11);;V1(100) N1(2) V2(100) N2(12);;JOUR;;V1(300) N1(3) V2(300) N2(13); NUIT; V1(300) N1(4) V2(300) N2(14);;JOUR;NUIT;;V1(140) N1(5) V2(140) N2(15);;
+
+module radars:
+input  V1        : integer;
+input  V2        : integer;
+output D1        : integer; 
+output D2        : integer; 
+output RECORD_V1 : integer; 
+output RECORD_V2 : integer; 
+input  N1        : integer;
+input  N2        : integer;
+output RECORD_N1 : integer; 
+output RECORD_N2 : integer; 
+output PV1       : integer; 
+output PV2       : integer; 
+output F1;
+output F2;
+output POL1      : integer;
+output POL2      : integer;
+input  CONFIG   : integer;
+input  JOUR;
+input  NUIT;
+
+run radar1 [signal V1/V, D1/D, RECORD_V1/RECORD_V, N1/N, RECORD_N1/RECORD_N, PV1/PV, F1/F, POL1/POL]
+||
+run radar2 [signal V2/V, D2/D, RECORD_V2/RECORD_V, N2/N, RECORD_N2/RECORD_N, PV2/PV, F2/F, POL2/POL]
+
+end module

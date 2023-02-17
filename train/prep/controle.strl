@@ -1,0 +1,52 @@
+module controle :
+input       ACCELERER : integer;
+inputoutput FREINER   : integer;
+inputoutput PRESENCE;
+output      VITESSE   : integer;
+
+function min (integer, integer) : integer;
+function max (integer, integer) : integer;
+
+relation ACCELERER # FREINER # PRESENCE;
+
+var niveau_accelerer := 0 : integer,
+    niveau_freiner := 0   : integer,
+    vitesse := 0          : integer
+    in
+   loop
+      present ACCELERER then
+         niveau_accelerer := ?ACCELERER;
+         niveau_freiner   := 0
+      end present;
+      present FREINER then
+         niveau_freiner   := ?FREINER;
+         niveau_accelerer := 0
+      end present;
+
+      if niveau_accelerer = 1 then
+         if vitesse = 0 then
+            vitesse := 1
+         else if vitesse > 1 then
+                 vitesse := vitesse - 1
+              end if
+         end if
+      elsif niveau_accelerer = 2 then
+         if vitesse < 5 then
+            vitesse := min(vitesse + 2, 5)
+         else if vitesse > 5 then
+                 vitesse := max(vitesse - 1, 5)
+              end if
+         end if
+      elsif niveau_accelerer = 3 then
+         if vitesse < 10 then
+            vitesse := min(vitesse + 3, 10)
+         end if
+      end if;
+
+      vitesse := max(vitesse - niveau_freiner, 0);
+
+      emit VITESSE(vitesse)
+   each tick
+end var
+
+end module

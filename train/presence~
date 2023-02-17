@@ -1,0 +1,19 @@
+module presence :
+
+inputoutput FREINER : integer;
+input ACCELERER : integer;
+inputoutput PRESENCE;
+  
+  var cpt :=0 : integer in
+    loop
+      present PRESENCE 
+        then cpt := 0
+        else cpt:=cpt+1
+      end present;
+      if(cpt>=10) then
+        emit FREINER(3)
+      end if;
+    each tick
+  end var
+  
+end module

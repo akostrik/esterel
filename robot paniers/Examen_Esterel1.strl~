@@ -1,0 +1,181 @@
+% esterel Examen_Esterel1.strl -B Examen_Esterel1 -simul
+% gcc -m32 -o Examen_Esterel1 Examen_Esterel1.c -L/Vrac/PC2R/esterelv5_92/lib -l csimul
+%  REMPLIR_DEBUT(1);;;REMPLIR_DEBUT(2);;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+module Panier_DEBUT :
+inputoutput REMPLIR_DEBUT : integer;
+inputoutput VIDER_DEBUT;
+inputoutput PANIER_PLEIN_DEBUT : integer;
+
+var n:=-1 : integer in
+loop 
+  await immediate REMPLIR_DEBUT;              
+  n:= ?REMPLIR_DEBUT;
+  pause;
+  abort sustain PANIER_PLEIN_DEBUT(n) when VIDER_DEBUT;
+  n:=-1
+end loop
+end var
+
+end module
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+module Panier_A :
+inputoutput REMPLIR_A : integer; 
+inputoutput VIDER_A;
+inputoutput PANIER_PLEIN_A : integer;
+
+var n:=-1 : integer in
+loop 
+  await immediate REMPLIR_A;   
+  n:= ?REMPLIR_A;
+  pause;
+  abort sustain PANIER_PLEIN_A(n) when VIDER_A;
+  n:=-1
+end loop
+end var
+
+end module
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+module Panier_B :
+inputoutput REMPLIR_B : integer; 
+inputoutput VIDER_B;
+inputoutput PANIER_PLEIN_B : integer;
+
+var n:=-1 : integer in
+loop 
+  await immediate REMPLIR_B;   
+  n:= ?REMPLIR_B;
+  pause;
+  abort sustain PANIER_PLEIN_B(n) when VIDER_B;
+  n:=-1
+end loop
+end var
+
+end module
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+module Panier_FIN :
+inputoutput REMPLIR_FIN         : integer; 
+inputoutput PANIER_PLEIN_SORTIE : integer;
+inputoutput FIN                 : integer;
+
+var n:=-1 : integer in
+loop 
+  await immediate REMPLIR_FIN;   
+  n:= ?REMPLIR_FIN;
+  pause;
+  emit PANIER_PLEIN_SORTIE(n);
+  emit FIN(n);
+  n:=-1;                                                        % 
+end loop
+end var
+
+end module
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+module Robot1 :
+inputoutput PANIER_PLEIN_DEBUT : integer;
+inputoutput PANIER_PLEIN_A : integer;
+inputoutput VIDER_DEBUT;
+inputoutput REMPLIR_A : integer;
+
+var n:=-1 : integer in
+loop
+  await PANIER_PLEIN_DEBUT;  % immediate 
+  n:=?PANIER_PLEIN_DEBUT;
+  pause;
+  emit VIDER_DEBUT;
+  await 2 tick;                     % nb aleatoire ticks
+  trap PANIER_VIDE_A in
+    loop
+      present PANIER_PLEIN_A 
+      else exit PANIER_VIDE_A
+      end present
+    each tick
+  end trap;
+  emit REMPLIR_A(n)
+end loop
+end var
+
+end module
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+module Robot2 :
+inputoutput PANIER_PLEIN_A : integer;
+inputoutput PANIER_PLEIN_B : integer;
+inputoutput VIDER_A;
+inputoutput REMPLIR_B : integer;
+
+var n:=-1 : integer in
+loop
+  await PANIER_PLEIN_A;
+  n:=?PANIER_PLEIN_A;
+  pause;
+  emit VIDER_A;
+  await 2 tick;                  
+  trap PANIER_VIDE_B in
+    loop
+      present PANIER_PLEIN_B 
+        else exit PANIER_VIDE_B
+      end present
+    each tick
+  end trap;
+  emit REMPLIR_B(n);
+end loop
+end var
+
+end module
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+module Robot3 :
+inputoutput PANIER_PLEIN_B      : integer;
+inputoutput PANIER_PLEIN_SORTIE : integer;
+inputoutput VIDER_B;
+inputoutput REMPLIR_FIN         : integer;
+
+var n:=-1 : integer in
+loop
+  await PANIER_PLEIN_B;
+  n:=?PANIER_PLEIN_B;
+  pause;
+  emit VIDER_B;
+  await 2 tick;                  
+  present PANIER_PLEIN_SORTIE then
+    pause
+  end present;
+  emit REMPLIR_FIN(n)
+end loop
+end var
+
+end module
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+module Examen_Esterel :
+inputoutput REMPLIR_DEBUT       : integer;
+inputoutput REMPLIR_A           : integer;
+inputoutput REMPLIR_B           : integer;
+inputoutput REMPLIR_FIN         : integer;
+inputoutput PANIER_PLEIN_DEBUT  : integer;
+inputoutput PANIER_PLEIN_A      : integer;
+inputoutput PANIER_PLEIN_B      : integer;
+inputoutput PANIER_PLEIN_SORTIE : integer;
+inputoutput VIDER_DEBUT, VIDER_A, VIDER_B;
+inputoutput FIN                 : integer;
+
+run Panier_DEBUT
+||
+run Panier_A
+||
+run Panier_B
+||
+run Panier_FIN
+||
+run Robot1
+||
+run Robot2
+||
+run Robot3
+
+end module

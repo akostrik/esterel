@@ -1,0 +1,32 @@
+module police :
+input  V        : integer; % vitese
+input  N        : integer; % nm voit
+output PV       : integer;
+output F;
+output POL      : integer;
+input  CONFIG   : integer;
+input  JOUR;
+input  NUIT;
+constant vmax_initiale=130 : integer;
+
+var vmax:=vmax_initiale: integer in      
+every immediate NUIT do
+  trap TRAP_JOUR in
+  every [PV or CONFIG or JOUR] do  % bien que PV output
+    present JOUR then
+      exit TRAP_JOUR
+    end present;
+    present CONFIG then
+      vmax:=?CONFIG
+    end present;
+    present PV then
+      if ?V>vmax+50 then 
+        emit POL(?N)
+      end if
+    end present
+    end every
+  end trap 
+end every
+end var 
+end module
+

@@ -1,0 +1,29 @@
+module presence :
+inputoutput FREINER : integer;
+input	    ACCELERER : integer;
+inputoutput PRESENCE;
+
+relation ACCELERER # FREINER # PRESENCE;
+
+var niveau_accelerer := 0 : integer,
+    niveau_freiner := 0 : integer,
+    accelerer : boolean,
+    freiner : boolean in
+   loop
+      accelerer := false;
+      freiner   := false;
+
+      present ACCELERER then
+         if (niveau_accelerer = ?ACCELERER)
+         else niveau_accelerer := ?ACCELERER; accelerer := true end if
+      end present;
+      present FREINER then
+         if (niveau_freiner = ?FREINER)
+         else niveau_freiner := ?FREINER; freiner := true end if
+      end present;
+      pause;
+      if accelerer or freiner then emit PRESENCE end if
+   each tick
+end var
+
+end module

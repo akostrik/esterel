@@ -1,0 +1,11 @@
+module securite :
+inputoutput FREINER : integer;
+inputoutput PRESENCE;
+
+relation FREINER # PRESENCE;
+
+loop
+   await 10 tick;
+   emit FREINER(3);
+each PRESENCE
+end module
